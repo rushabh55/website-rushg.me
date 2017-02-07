@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>Three.JS FPS</title>
+		<link rel="stylesheet" href="fpsexample.css" type="text/css" media="screen">
+	</head>
+	<body id="body" style="width:100%; height:100%">
+        <script type="text/javascript" src="libraries/three.js"></script>
+		<script src="FirstPersonControls.js"></script>
+		<script src="worldmanager.js"></script>
+		<script src="enemymanager.js"></script>
+		<script src="networkmanager.js"></script>
+        <script src="MotionControls.js"></script>
+		<!--<div id="blocker">
+			<div id="instructions">
+				<span style="font-size:40px">Click to play</span>
+				<br />
+				(W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+			</div>
+		</div>-->
+		<div id="health">         
+			<div id="percent" style="color:white">Health: <span id="p"></span></div>
+			<progress id="progress-bar" value="100" max="100"></progress>
+            <!--<label id="console2">blah</label>-->
+		</div>
+        <!--Not good at CSS. Cant figure out how to overlay the cross hair onto the canvas. -GOSAR--> 
+        <div  id ="crosshair2" ><img src="Textures/crosshair.png" height = "50px" width = "50px"/></div>
+        <!--Inline Shaders-->
+        <script id="vertexShader" type="x-shader/x-vertex">
+            varying vec3 vNormal;
+            void main()
+            {
+            vNormal = normalize( normalMatrix * normal );
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+            }
+        </script>
+        <script id="fragmentShader" type="x-shader/x-pixel">
+            varying vec3 vNormal;
+            void main()
+            {
+            float intensity = pow( 0.27 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), 4.1 );
+            gl_FragColor = vec4( 189.0 / 255.0, 190.0 / 255.0, 192.0 / 255.0, 1.0 ) * intensity;
+            }
+        </script>
+
+        <script>
+            var shootSound = new Audio('Assets/shoot_sound.wav');
+            var bgMusic = new Audio('Assets/bg.wav');
+            function loadSound() {
+                shootSound.volume = 1;
+                shootSound.play();
+            }
+
+            function loadBG() {
+                bgMusic.volume = 0.2;
+                bgMusic.loop = true;
+                bgMusic.play();                
+            }
+            loadBG();
+
+            function loadSun() {
+              
+            }
+
+            loadSun();
+        </script>
+		<script src="fpsexample.js"></script>
+        <script>
+            var delta = 1 / 60;
+            var accPresent = false;
+            if (navigator.userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile/i)
+                && window.DeviceMotionEvent)
+                accPresent = true;
+
+            function onOrientationChange() {
+                var body = document.getElementById('body');
+                var deg = 0;
+                switch (window.orientation) {
+                    case -90:
+                        isPaused = false;
+                        break;
+                    case 90:
+                    default:
+                        alert('You should only play this game is Landscape left');
+                        isPaused = true;
+                        break;
+                }
+            }
+            window.addEventListener('orientationchange', onOrientationChange);
+            
+            if (accPresent) {
+                this.ondevicemotion = accleration;
+                this.ondeviceorientation = accleration;
+            }
+
+            var console2 = document.getElementById('console2');
+            
+
+            function accleration(event) {
+                if (event.type === 'devicemotion') {
+                    var x = event.accelerationIncludingGravity.x;
+                    var z = event.accelerationIncludingGravity.z;
+                    var y = event.accelerationIncludingGravity.y;
+                    if (x != null && y != null && z != null) {
+
+                        //right
+                        if (y > 0.5) {
+                            controls.accRight = true;
+                        }
+                        else 
+                        {
+                            controls.accRight = false;
+                        }
+                        
+                        // left
+                        if (y < -0.5) {
+                            controls.accLeft = true;
+                        }
+                        else
+                        {
+                            controls.accLeft = false;
+                        }
+                        
+                        // is sprinting
+                        if (x > 9 && x < -3)
+                            controls.isSprinting = true;
+                        else
+                            controls.isSprinting = false;
+
+                        // forward, back
+                        if (x < -0.2) {
+                            controls.accForward = true;
+                            contorls.accBackward = false;
+                        }
+                        else {
+                            controls.accForward = false;
+                        }
+
+                        if (x > 5) {
+                            controls.accBackward = true;
+                            controls.accForward = false;
+                        }
+                        else {
+                            contorls.accBackward = false;
+                        }
+                    }
+                }                
+            }
+
+            this.addEventListener("touchstart", touchStart, false);
+            this.addEventListener("touchmove", touchMove, false);
+            this.addEventListener("touchend", touchEnd, false);
+            var start = { x: 0, y: 0 };
+
+            function touchEnd() {
+                start = { x: 0, y: 0 };
+                controls.mouseX = 0;
+                controls.mouseY = 0;
+            }
+
+            function touchStart(e) {
+                start.x = event.touches[0].pageX;
+                start.y = event.touches[0].pageY;
+            }
+
+            var rotationSpeed = 1;
+            function touchMove(e) {
+                offset = {};
+                offset.x = start.x - event.touches[0].pageX;
+                offset.y = start.y - event.touches[0].pageY;
+                controls.mouseX = -offset.x * rotationSpeed;
+                controls.mouseY = -offset.y * rotationSpeed;
+            }
+
+            function degInRad(w) {
+                return w * Math.PI / 180;
+            }
+        </script>
+	</body>
+</html>

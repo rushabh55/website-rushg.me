@@ -1,0 +1,7 @@
+[03-May-2015 05:05:25 America/New_York] PHP Fatal error:  Function name must be a string in /home/rushjzvr/public_html/TreasureHunt/authenticate.php on line 2
+[03-May-2015 05:10:04 America/New_York] PHP Fatal error:  Function name must be a string in /home/rushjzvr/public_html/TreasureHunt/authenticate.php on line 2
+[03-May-2015 05:10:21 America/New_York] PHP Fatal error:  Function name must be a string in /home/rushjzvr/public_html/TreasureHunt/authenticate.php on line 2
+[03-May-2015 05:24:27 America/New_York] PHP Parse error:  syntax error, unexpected ')', expecting ']' in /home/rushjzvr/public_html/TreasureHunt/authenticate.php on line 6
+[03-May-2015 05:25:12 America/New_York] PHP Parse error:  syntax error, unexpected ')', expecting ']' in /home/rushjzvr/public_html/TreasureHunt/authenticate.php on line 6
+[03-May-2015 05:25:32 America/New_York] PHP Parse error:  syntax error, unexpected '"http://rushg.me/TreasureHunt/' (T_CONSTANT_ENCAPSED_STRING) in /home/rushjzvr/public_html/TreasureHunt/authenticate.php on line 11
+[03-May-2015 05:26:02 America/New_York] PHP Parse error:  syntax error, unexpected '"https://rest.nexmo.com/sms/js' (T_CONSTANT_ENCAPSED_STRING) in /home/rushjzvr/public_html/TreasureHunt/authenticate.php on line 11

@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>Three.JS FPS</title>
+		<link rel="stylesheet" href="fpsexample.css" type="text/css" media="screen">
+	</head>
+	<body style="">
+        <script type="text/javascript" src="libraries/three.js"></script>
+		<script src="libraries/PreBuilt/controls/FirstPersonControls.js"></script>
+		<script src="inputmanager.js"></script>
+		<script src="worldmanager.js"></script>
+		<script src="enemymanager.js"></script>
+		<script src="networkmanager.js"></script>
+        <script src="MotionControls.js"></script>
+		<!--<div id="blocker">
+			<div id="instructions">
+				<span style="font-size:40px">Click to play</span>
+				<br />
+				(W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+			</div>
+		</div>-->
+		<div id="health">         
+			<div id="percent">Health: <span id="p"></span></div>
+			<progress id="progress-bar" value="100" max="100"></progress>
+		</div>
+        <label id="console">blah</label>
+        <br />
+        <label id="console2">blah</label>
+		<script src="fpsexample.js"></script>
+        <script>
+            var delta = 1 / 60;
+            //acc input
+            var console2 = document.getElementById('console2');
+            var accPresent = false;
+            if (window.DeviceMotionEvent) {
+                accPresent = true;
+                var t = document.getElementById('console');
+                t.innerText = "acc present";
+            }
+            else {
+                accPresent = false;
+                var t = document.getElementById('console');
+                t.innerText = "acc absent";
+            }
+            if (accPresent) {
+                this.ondevicemotion = accleration;
+                this.ondeviceorientation = accleration;
+            }
+            function accleration() {
+                if (event.type === 'devicemotion') {
+                    var x = event.accelerationIncludingGravity.x;
+                    var z = event.accelerationIncludingGravity.z;
+                    var y = event.accelerationIncludingGravity.y;
+                    var velocity = new THREE.Vector3();
+                    if (x != null && y != null && z != null) {
+                        if (x < -0.5) {
+                            inputManager.moveForward = true;
+                            velocity.z -= 400.0 * delta;
+                            console2.innerText = "Forward";
+                        }
+                        if (x > 0.5) {
+                            inputManager.moveBackward = true;
+                            velocity.z += 400.0 * delta;
+                            console2.innerText = "Backward";
+                        }
+                        if (x > 1.5 || x < -1.5) {
+                            inputManager.isSprinting = true;
+                            console2.innerText = "isSprinting";
+                        }
+                        else {
+                        }
+
+                        if (z > 11 || z < 9) {
+                            if (inputManager.canJump == true) {
+                                inputManager.moveJump = true;
+                            }
+                            else {
+                                inputManager.canJump = false;
+                            }
+                        }
+
+                        if (y > 0.5) {
+                            inputManager.moveRight = true;
+                            velocity.x += 400.0 * delta;
+                            console2.innerText = "moveRight";
+                        }
+                        else
+                            if (y < -0.5) {
+                                inputManager.moveLeft = true;
+                                velocity.x -= 400.0 * delta;
+                                console2.innerText = "moveLeft";
+                            }
+                        
+                        inputManager.acceleration = new THREE.Vector3(x, y, z);
+                    }
+                }
+                else if (event.type === 'deviceorientation') {
+                    if (x == null) x = event.alpha;
+                    if (y == null) y = event.beta;
+                    if (z == null) z = event.gamma;
+                    if (x != null && y != null && z != null) {
+                        if (y < -95) {
+                            inputManager.moveForward = true;
+                        }
+                        if (y > -85) {
+                            inputManager.moveBackward = true;
+                        }
+                        if (x > 1.5 || x < -1.5) {
+                            inputManager.isSprinting = true;
+                        }
+                        else {
+                        }
+
+                        if (z > 11 || z < 9) {
+                            if (inputManager.canJump == true) {
+                                inputManager.moveJump = true;
+                            }
+                            else {
+                                inputManager.canJump = false;
+                            }
+                        }
+
+                        if (x < -20) {
+                            inputManager.moveRight = true;
+                        }
+                        else
+                            if (x > 20) {
+                                inputManager.moveLeft = true;
+                            }
+                        
+                        inputManager.acceleration = new THREE.Vector3(x, y, z);
+                    }
+                }
+            }
+            var hasTouch = true;
+
+            if (hasTouch) {
+                this.addEventListener("touchstart", touchStart, false);
+                this.addEventListener("touchmove", touchMove, false);
+                this.addEventListener("touchend", touchEnd, false);
+                this.addEventListener("mousemove", mouseMove, false);
+            }
+
+            function mouseMove() {
+                if (start.x != 0) {
+                    offset = {};
+                    offset.x = start.x - event.pageX;
+                    offset.y = start.y - event.pageY;
+
+                    var axisX = new THREE.Vector3(0, 1, 0).normalize();
+                    var axisY = new THREE.Vector3(1, 0, 0).normalize();
+
+                    //controls.getObject().rotateOnAxis(axisX, degInRad(offset.x * rotationSpeed));
+                    //controls.getObject().rotateOnAxis(axisY, degInRad(offset.y * rotationSpeed));
+                    renderer.render(scene, camera);
+                }
+                else {
+                    start.x = event.pageX;
+                    start.y = event.pageY;
+                }
+            }
+
+            var start = { x: 0, y: 0 };
+
+            function touchEnd() {
+                start = { x: 0, y: 0 };
+            }
+
+            function touchStart(e) {
+                start.x = event.touches[0].pageX;
+                start.y = event.touches[0].pageY;
+            }
+
+            var rotationSpeed = 0.025;
+            function touchMove(e) {
+                offset = {};
+
+                offset.x = start.x - event.touches[0].pageX;
+                offset.y = start.y - event.touches[0].pageY;
+
+                //controls.getObject().rotation.x += degInRad(offset.x * rotationSpeed);
+                //controls.getObject().rotation.y += degInRad(offset.y * rotationSpeed);
+                
+                renderer.render(scene, camera);
+            }
+
+            function degInRad(w) {
+                return w * Math.PI / 180;
+            }
+
+
+        </script>
+	</body>
+</html>
